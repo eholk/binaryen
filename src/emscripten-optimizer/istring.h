@@ -67,9 +67,6 @@ struct IString {
   void set(const char *s, bool reuse=true) {
     typedef std::unordered_set<const char *, CStringHash, CStringEqual> StringSet;
     static StringSet strings;
-    // Save a copy of all the strings we allocate in an attempt to convince
-    // asan that we don't leak.
-    static std::vector<std::string> copied_strings;
 
     auto existing = strings.find(s);
 
@@ -78,8 +75,10 @@ struct IString {
       // not be modified by multiple threads at once.
       assert(!wasm::ThreadPool::isRunning());
       if (!reuse) {
-        copied_strings.emplace_back(std::string(s));
-        s = copied_strings.back().c_str();
+        size_t len = strlen(s) + 1;
+        char *copy = (char*)malloc(len); // XXX leaked
+        strncpy(copy, s, len);
+        s = copy;
       }
       strings.insert(s);
     } else {
