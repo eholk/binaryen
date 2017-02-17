@@ -99,7 +99,7 @@ for asm in tests:
         cmd = ASM2WASM + [os.path.join(options.binaryen_test, asm)]
         wasm = asm.replace('.asm.js', '.fromasm')
         if not precise:
-          cmd += ['--imprecise']
+          cmd += ['--imprecise', '--ignore-implicit-traps']
           wasm += '.imprecise'
         if not opts:
           wasm += '.no-opts'
@@ -107,6 +107,8 @@ for asm in tests:
             cmd += ['-O0'] # test that -O0 does nothing
         else:
           cmd += ['-O']
+        if 'debugInfo' in asm:
+          cmd += ['-g']
         if precise and opts:
           # test mem init importing
           open('a.mem', 'wb').write(asm)
