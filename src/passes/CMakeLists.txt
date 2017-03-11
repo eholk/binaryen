@@ -7,12 +7,14 @@ SET(passes_SOURCES
   ExtractFunction.cpp
   Inlining.cpp
   LegalizeJSInterface.cpp
+  LocalCSE.cpp
   MemoryPacking.cpp
   MergeBlocks.cpp
   Metrics.cpp
   NameManager.cpp
   NameList.cpp
   OptimizeInstructions.cpp
+  PickLoadSigns.cpp
   PostEmscripten.cpp
   Precompute.cpp
   Print.cpp

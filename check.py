@@ -94,13 +94,16 @@ print '[ checking asm2wasm testcases... ]\n'
 
 for asm in tests:
   if asm.endswith('.asm.js'):
-    for precise in [1, 0]:
+    for precise in [0, 1, 2]:
       for opts in [1, 0]:
         cmd = ASM2WASM + [os.path.join(options.binaryen_test, asm)]
         wasm = asm.replace('.asm.js', '.fromasm')
         if not precise:
-          cmd += ['--imprecise', '--ignore-implicit-traps']
+          cmd += ['--emit-potential-traps', '--ignore-implicit-traps']
           wasm += '.imprecise'
+        elif precise == 2:
+          cmd += ['--emit-clamped-potential-traps']
+          wasm += '.clamp'
         if not opts:
           wasm += '.no-opts'
           if precise:
@@ -184,11 +187,12 @@ for t in tests:
   if t.endswith('.wast') and not t.startswith('spec'):
     print '..', t
     t = os.path.join(options.binaryen_test, t)
+    f = t + '.from-wast'
     cmd = WASM_OPT + [t, '--print']
     actual = run_command(cmd)
     actual = actual.replace('printing before:\n', '')
 
-    expected = open(t, 'rb').read()
+    expected = open(f, 'rb').read()
     if actual != expected:
       fail(actual, expected)
 

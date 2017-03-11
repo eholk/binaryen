@@ -22,7 +22,6 @@
 #define wasm_wasm_binary_h
 
 #include <cassert>
-#include <istream>
 #include <ostream>
 #include <type_traits>
 
@@ -270,7 +269,7 @@ namespace BinaryConsts {
 
 enum Meta {
   Magic = 0x6d736100,
-  Version = 0x0d
+  Version = 0x01
 };
 
 enum Section {
@@ -638,7 +637,7 @@ public:
   WasmBinaryBuilder(Module& wasm, std::vector<char>& input, bool debug) : wasm(wasm), allocator(wasm.allocator), input(input), debug(debug) {}
 
   void read();
-  void readUserSection();
+  void readUserSection(size_t payloadLen);
   bool more() { return pos < input.size();}
 
   uint8_t getInt8();
